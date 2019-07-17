@@ -1,3 +1,14 @@
-<p>
-  game-board works!
-</p>
+<table class="board">
+  <tr *ngFor="let row of gameBoard" class="board__row">
+    <td
+      *ngFor="let tile of row"
+      class="board__tile"
+      [class.active]="tile.hasMine"
+      (click)="onElementClick(tile)">
+
+      <div class="board__tile__info">
+        {{ tile.hasMine ? 1 : 0 }}
+      </div>
+    </td>
+  </tr>
+</table>
