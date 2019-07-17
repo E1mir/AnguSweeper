@@ -1,0 +1,19 @@
+<button (click)="onStartNewGame()">
+  new game
+</button>
+
+{{ timer | convertSecondsToTime }}
+<form [formGroup]="selectDifficultFormGroup">
+  <label>
+    <select formControlName="difficult">
+      <option [value]="EASY">Easy</option>
+      <option [value]="MEDIUM">Medium</option>
+      <option [value]="HARD">Hard</option>
+    </select>
+  </label>
+</form>
+
+<br>
+<app-game-board [gameDifficult]="difficult">
+</app-game-board>
+
