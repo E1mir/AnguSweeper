@@ -1,0 +1,10 @@
+@mixin buttonBehavior($color) {
+
+  &:hover {
+    background-color: lighten($color, 5%);
+  }
+
+  &:active {
+    background-color: darken($color, 5%);
+  }
+}
