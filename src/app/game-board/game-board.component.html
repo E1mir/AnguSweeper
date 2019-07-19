@@ -3,11 +3,10 @@
     <td
       *ngFor="let tile of row"
       class="board__tile"
-      [class.active]="tile.hasMine"
+      [class.active]="tile.isObserved"
       (click)="onElementClick(tile)">
-
-      <div class="board__tile__info">
-        {{ tile.hasMine ? 1 : 0 }}
+      <div class="info" *ngIf="tile.nearestBombsCount > 0 && tile.isObserved">
+        {{ tile.nearestBombsCount }}
       </div>
     </td>
   </tr>

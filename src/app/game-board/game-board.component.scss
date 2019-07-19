@@ -22,8 +22,13 @@
       background-color: #ffffff;
     }
 
-    &:hover {
+    &:hover:not(.active) {
       background-color: rgba(0, 0, 0, .2);
     }
+
+    .info {
+
+    }
   }
+
 }
