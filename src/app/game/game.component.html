@@ -1,14 +1,14 @@
 <button (click)="onStartNewGame()">
-  new game
+  New Game
 </button>
-
-{{ timer | convertSecondsToTime }}
+{{ time | convertSecondsToTime }}
 <form [formGroup]="selectDifficultFormGroup">
   <label>
     <select formControlName="difficult">
-      <option [value]="EASY">Easy</option>
-      <option [value]="MEDIUM">Medium</option>
-      <option [value]="HARD">Hard</option>
+      <option [value]="BEGINNER">Beginner</option>
+      <option [value]="INTERMEDIATE">Intermediate</option>
+      <option [value]="ADVANCED">Advanced</option>
+      <option [value]="EXPERT">Expert</option>
     </select>
   </label>
 </form>
