@@ -8,3 +8,9 @@ export const FLAGS = [
   FLAG_MINE,
   FLAG_UNDEFINED
 ];
+export const DIRECTIONS = [
+  {x: -1, y: 0},  // left
+  {x: 0, y: 1},   // up
+  {x: 1, y: 0},   // right
+  {x: 0, y: -1}   // down
+];
