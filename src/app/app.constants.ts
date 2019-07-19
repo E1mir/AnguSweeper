@@ -1,3 +1,5 @@
-export const EASY = 'easy';
-export const MEDIUM = 'medium';
-export const HARD = 'hard';
+export const BEGINNER = 'beginner';
+export const INTERMEDIATE = 'intermediate';
+export const ADVANCED = 'advanced';
+export const EXPERT = 'expert';
+
