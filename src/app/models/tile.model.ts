@@ -1,9 +1,12 @@
+import { FLAGS } from '../app.constants';
+
 export class Tile {
   private _x: number;
   private _y: number;
   private _nearestBombsCount: number;
   private _hasMine: boolean;
   private _isObserved: boolean;
+  private _flag: string;
 
   constructor(x: number, y: number) {
     this._x = x;
@@ -27,8 +30,21 @@ export class Tile {
   }
 
   set isObserved(observed: boolean) {
-    this._isObserved = observed;
+    if (!this._isObserved) {
+      this._isObserved = observed;
+    }
   }
+
+  set flag(flag: string) {
+    const valid = FLAGS.indexOf(flag) !== -1;
+    console.log(valid);
+    if (valid) {
+      this._flag = flag;
+    } else {
+      throw Error('Undefined flag!');
+    }
+  }
+
 
   get y(): number {
     return this._y;
@@ -48,5 +64,9 @@ export class Tile {
 
   get isObserved(): boolean {
     return this._isObserved;
+  }
+
+  get flag(): string {
+    return this._flag;
   }
 }
