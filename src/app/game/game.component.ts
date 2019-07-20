@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ADVANCED, BEGINNER, EXPERT, INTERMEDIATE } from '../app.constants';
+import { BEGINNER, DIFFICULTY_LEVELS } from '../app.constants';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameService } from '../services/game.service';
 import { Subscription } from 'rxjs';
@@ -15,11 +15,7 @@ export class GameComponent implements OnInit, OnDestroy {
   public time: number = 0;
   public highScore: Score;
   public difficultySelectFormGroup: FormGroup;
-  public BEGINNER = BEGINNER;
-  public INTERMEDIATE = INTERMEDIATE;
-  public ADVANCED = ADVANCED;
-  public EXPERT = EXPERT;
-
+  public DIFFICULTY_LEVELS = DIFFICULTY_LEVELS;
 
   private startGameSubscription: Subscription;
   private timerSubscription: Subscription;

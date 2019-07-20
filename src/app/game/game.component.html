@@ -7,10 +7,9 @@
       <select
         formControlName="difficult"
         class="game__form__input game__form__input_select">
-        <option [value]="BEGINNER" selected>Beginner</option>
-        <option [value]="INTERMEDIATE">Intermediate</option>
-        <option [value]="ADVANCED">Advanced</option>
-        <option [value]="EXPERT">Expert</option>
+        <option
+          *ngFor="let level of DIFFICULTY_LEVELS"
+          [value]="level.level">{{ level.level | titlecase }}</option>
       </select>
     </label>
     <button
