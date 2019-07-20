@@ -54,4 +54,18 @@ export class GameService {
       this.timer.next(this.time);
     }, 1000);
   }
+
+  gameWon(difficultyLevel: string) {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this.updateHighScore(this.time, difficultyLevel);
+    }
+  }
+
+  stopGame() {
+    if (this._interval) {
+      this.time = 0;
+      clearInterval(this._interval);
+    }
+  }
 }
