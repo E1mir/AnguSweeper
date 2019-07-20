@@ -36,12 +36,15 @@ export class Tile {
   }
 
   set flag(flag: string) {
-    const valid = FLAGS.indexOf(flag) !== -1;
-    console.log(valid);
-    if (valid) {
-      this._flag = flag;
+    if (flag === null) {
+      this._flag = null;
     } else {
-      throw Error('Undefined flag!');
+      const valid = FLAGS.indexOf(flag) !== -1;
+      if (valid) {
+        this._flag = flag;
+      } else {
+        throw Error('Undefined flag!');
+      }
     }
   }
 
