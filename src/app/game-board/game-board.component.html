@@ -1,24 +1,29 @@
-<div *ngIf="gameOver">
-  GAME OVER!
+<div class="board">
+  <div class="board__game-state">
+    <span *ngIf="gameOver">Game over!</span>
+    <span *ngIf="gameWon">You win!</span>
+  </div>
+  <div class="board__mines-left">
+    {{ this.minesCount }}
+  </div>
+  <table class="board__table">
+    <tr *ngFor="let row of gameBoard" class="board__table__row">
+      <td
+        *ngFor="let tile of row"
+        class="board__table__tile"
+        (mousedown)="tileHeld(tile)"
+        (mouseup)="tileClicked(tile)">
+        <div
+          class="info"
+          [class.active]="tile.isObserved"
+          [class.mine-flag]="tile.flag && !tile.isObserved"
+          [class.game-over]="gameOver && tile.hasMine">
+          {{ tile.nearestBombsCount > 0 && !tile.flag && tile.isObserved ? tile.nearestBombsCount : '' }}
+          <div class="incorrect-flag" *ngIf="gameOver && !tile.hasMine && tile.flag">
+            \
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
 </div>
-<div *ngIf="gameWon">
-  YOU WIN!
-</div>
-<table class="board">
-  <tr *ngFor="let row of gameBoard" class="board__row">
-    <td
-      *ngFor="let tile of row"
-      class="board__tile"
-      [class.active]="tile.isObserved"
-      [class.mine]="tile.flag && !tile.isObserved"
-      (mousedown)="tileHeld(tile)"
-      (mouseup)="tileClicked(tile)">
-      <!-- <div class="info" *ngIf="tile.nearestBombsCount > 0 && tile.isObserved">-->
-      <!--   {{ tile.nearestBombsCount }}-->
-      <!-- </div>-->
-      <div class="info">
-        {{ tile.nearestBombsCount }}
-      </div>
-    </td>
-  </tr>
-</table>

@@ -1,36 +1,71 @@
 .board {
-  border-collapse: collapse;
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
 
-  &__row {
+  &__game-state {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  &__tile {
-    border: 1px solid black;
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-    text-align: center;
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, .1);
-
-    &.active {
-      background-color: #ffffff;
-    }
-
-    &:hover:not(.active) {
-      background-color: rgba(0, 0, 0, .2);
-    }
-
-    &.mine {
-      background-image: url('../../assets/images/depth-charge.svg');
-      background-size: cover;
-      background-repeat: no-repeat;
-    }
-
-    .info {
-
-    }
+  &__mines-left {
+    position: absolute;
+    top: -20px;
+    right: 0;
   }
 
+  &__table {
+    border-collapse: collapse;
 
+    &__row {
+    }
+
+    &__tile {
+      position: relative;
+      border: 1px solid black;
+      width: 25px;
+      height: 25px;
+      text-align: center;
+      cursor: pointer;
+
+
+      .info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        line-height: 25px;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, .1);
+        overflow: hidden;
+
+        &.mine-flag, &.game-over {
+          background-image: url('../../assets/images/depth-charge.svg');
+          background-size: cover;
+          background-repeat: no-repeat;
+        }
+
+        .incorrect-flag {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(3.5) rotate(-30deg);
+          line-height: 0;
+          font-weight: 300;
+          color: red;
+        }
+
+        &.active {
+          background-color: #ffffff;
+        }
+
+        &:hover:not(.active) {
+          background-color: rgba(0, 0, 0, .2);
+        }
+
+      }
+    }
+  }
 }
