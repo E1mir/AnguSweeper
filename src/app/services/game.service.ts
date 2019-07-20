@@ -1,28 +1,38 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Score } from '../models/score.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
   public timer = new Subject<number>();
-  public onStartGame = new Subject<boolean>();
+  public onStartGame = new Subject<string>();
 
-  private storage: Storage;
-  private _highScore: number;
+  private _storage: Storage;
   private _time: number;
-  private interval;
+  private _interval;
 
   constructor() {
-    this.storage = localStorage;
+    this._storage = localStorage;
   }
 
-  set highScore(timeInSeconds: number) {
-    this.storage.setItem('high-score', `${timeInSeconds}`);
+  updateHighScore(timeInSeconds: number, difficultyLevel: string) {
+    const previousHighScore = this.getHighScore(difficultyLevel);
+    const currentScore = new Score(timeInSeconds, difficultyLevel);
+    const key = `high-score-${difficultyLevel}`;
+
+    if (previousHighScore) {
+      if (previousHighScore.time > timeInSeconds) {
+        this._storage.setItem(key, JSON.stringify(currentScore));
+      }
+    } else {
+      this._storage.setItem(key, JSON.stringify(currentScore));
+    }
   }
 
-  get highScore(): number {
-    return +this.storage.getItem('high-score');
+  getHighScore(difficultyLevel: string): Score {
+    return JSON.parse(this._storage.getItem(`high-score-${difficultyLevel}`));
   }
 
   set time(time: number) {
@@ -33,13 +43,13 @@ export class GameService {
     return this._time;
   }
 
-  startGame() {
-    this.onStartGame.next(true);
+  startGame(difficult: string) {
+    this.onStartGame.next(difficult);
     this.time = 0;
-    if (this.interval) {
-      clearInterval(this.interval);
+    if (this._interval) {
+      clearInterval(this._interval);
     }
-    this.interval = setInterval(() => {
+    this._interval = setInterval(() => {
       this.time++;
       this.timer.next(this.time);
     }, 1000);
