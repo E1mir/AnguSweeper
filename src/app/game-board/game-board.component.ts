@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Tile } from '../models/tile.model';
-import { ADVANCED, BEGINNER, DIRECTIONS, EXPERT, INTERMEDIATE } from '../app.constants';
+import { ALL_DIRECTIONS, DIFFICULTY_LEVELS, FLAG_MINE, FOUR_DIRECTIONS } from '../app.constants';
 import { GameService } from '../services/game.service';
 import { Subscription } from 'rxjs';
 
@@ -10,63 +10,103 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./game-board.component.scss']
 })
 export class GameBoardComponent implements OnInit, OnDestroy {
-  @Input() gameDifficult: string;
   public gameBoard: Tile[][] = [];
   public gameOver: boolean;
+  public gameWon: boolean;
 
-  private rows: number;
-  private cols: number;
-  private bombsCount: number;
+  private mouseHoldTimeout = null;
+  private height: number;
+  private width: number;
+  private minesCount: number;
   private gameSubscription: Subscription;
+  private gameDifficult: string;
+  private tilesWithMine: Tile[];
 
   constructor(private gameService: GameService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.gameSubscription = this.gameService.onStartGame.subscribe(
-      () => {
+      (difficult: string) => {
+        this.gameDifficult = difficult;
         this.startGame();
       }
     );
   }
 
-  onElementClick(tile: Tile): void {
-    if (tile.hasMine) {
-      this.gameOver = true;
+  tileClicked(tile: Tile) {
+    if (!tile.isObserved) {
+      if (this.mouseHoldTimeout) {
+        clearTimeout(this.mouseHoldTimeout);
+        this.mouseHoldTimeout = null;
+        this.onElementClicked(tile);
+      }
+    }
+  }
+
+  tileHeld(tile: Tile) {
+    if (!tile.isObserved) {
+      this.mouseHoldTimeout = setTimeout(() => {
+        if (tile.flag) {
+          tile.flag = null;
+          this.minesCount++;
+        } else {
+          tile.flag = FLAG_MINE;
+          this.minesCount--;
+          this.isGameWon();
+        }
+        this.mouseHoldTimeout = null;
+      }, 300);
+    }
+  }
+
+  private onElementClicked(tile: Tile): void {
+    if (tile.flag === FLAG_MINE) {
       return;
-    } else if (tile.nearestBombsCount === 0) {
+    }
+    if (tile.hasMine) {
+      this.stopGame();
+      return;
+    }
+    if (tile.nearestBombsCount === 0) {
       this.clearZeroTiles(tile);
     } else {
       tile.isObserved = true;
     }
   }
 
-  private startGame() {
+  private startGame(): void {
     this.initializeBoardConfiguration();
     this.generateBoard();
     this.placeBombs();
     this.countMineNeighbors();
   }
 
+  private stopGame() {
+    this.gameOver = true;
+    this.gameService.stopGame();
+  }
+
+
   private initializeBoardConfiguration(): void {
-    this.rows = 10;
-    this.cols = 15;
-    if (this.gameDifficult === BEGINNER) {
-      this.bombsCount = 10;
-    } else if (this.gameDifficult === INTERMEDIATE) {
-      this.bombsCount = 15;
-    } else if (this.gameDifficult === ADVANCED) {
-      this.bombsCount = 25;
-    } else if (this.gameDifficult === EXPERT) {
-      this.bombsCount = 35;
+    this.gameOver = false;
+    this.gameWon = false;
+    const difficultyIndex = DIFFICULTY_LEVELS.findIndex((difficult) => this.gameDifficult === difficult.level);
+    if (difficultyIndex !== -1) {
+      const difficulty = DIFFICULTY_LEVELS[difficultyIndex];
+      this.height = difficulty.height;
+      this.width = difficulty.width;
+      this.minesCount = difficulty.minesCount;
+    } else {
+      throw Error('Undefined difficulty level');
     }
   }
 
-  private generateBoard() {
+  private generateBoard(): void {
     this.gameBoard = [];
-    for (let y = 0; y < this.rows; y++) {
+    for (let y = 0; y < this.height; y++) {
       const row = [];
-      for (let x = 0; x < this.cols; x++) {
+      for (let x = 0; x < this.width; x++) {
         const tile = new Tile(x, y);
         row.push(tile);
       }
@@ -74,22 +114,24 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private placeBombs() {
-    let bombsLeft = this.bombsCount;
+  private placeBombs(): void {
+    this.tilesWithMine = [];
+    let bombsLeft = this.minesCount;
     while (bombsLeft !== 0) {
-      const x = Math.floor(Math.random() * this.cols);
-      const y = Math.floor(Math.random() * this.rows);
+      const x = Math.floor(Math.random() * this.width);
+      const y = Math.floor(Math.random() * this.height);
       const tile = this.gameBoard[y][x];
       if (!tile.hasMine) {
         tile.hasMine = true;
+        this.tilesWithMine.push(tile);
         bombsLeft--;
       }
     }
   }
 
-  private countMineNeighbors() {
-    for (let y = 0; y < this.rows; y++) {
-      for (let x = 0; x < this.cols; x++) {
+  private countMineNeighbors(): void {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
         const tile = this.gameBoard[y][x];
         if (!tile.hasMine) {
           this.countNeighbourBomb(tile);
@@ -108,9 +150,9 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private clearZeroTiles(tile: Tile) {
+  private clearZeroTiles(tile: Tile): void {
     tile.isObserved = true;
-    const tileNeighbours = this.getTileNeighbours(tile);
+    const tileNeighbours = this.getTileNeighbours(tile, false);
     const zeroTiles = [];
     for (const neighbour of tileNeighbours) {
       if (neighbour.nearestBombsCount === 0 && !neighbour.isObserved) {
@@ -124,16 +166,17 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getTileNeighbours(tile: Tile): Tile[] {
+  private getTileNeighbours(tile: Tile, onAllDirections: boolean = true): Tile[] {
     const neighbours: Tile[] = [];
-    for (const direction of DIRECTIONS) {
+    const directions = onAllDirections ? ALL_DIRECTIONS : FOUR_DIRECTIONS;
+    for (const direction of directions) {
       const currentX = tile.x;
       const currentY = tile.y;
       const neighbourX = currentX + direction.x;
       const neighbourY = currentY + direction.y;
       if (
-        (neighbourX >= 0 && neighbourX < this.cols) &&
-        (neighbourY >= 0 && neighbourY < this.rows)
+        (neighbourX >= 0 && neighbourX < this.width) &&
+        (neighbourY >= 0 && neighbourY < this.height)
       ) {
         const neighbourTile = this.gameBoard[neighbourY][neighbourX];
         neighbours.push(neighbourTile);
@@ -142,7 +185,14 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     return neighbours;
   }
 
-  ngOnDestroy() {
+  private isGameWon() {
+    this.gameWon = this.tilesWithMine.findIndex((tile) => tile.flag !== FLAG_MINE) === -1;
+    if (this.gameWon) {
+      this.gameService.gameWon(this.gameDifficult);
+    }
+  }
+
+  ngOnDestroy(): void {
     this.gameSubscription.unsubscribe();
   }
 }
