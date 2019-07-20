@@ -1,0 +1,57 @@
+.game {
+  font-family: sans-serif;
+
+  &__title {
+    text-align: center;
+  }
+
+  &__form {
+    text-align: center;
+    margin: 0 auto;
+
+    &__input {
+      display: inline-block;
+      background-color: #ffffff;
+      padding: 5px 10px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      outline: none;
+
+      &_select {
+        cursor: pointer;
+      }
+
+      &_button {
+        display: block;
+        margin: 5px auto 0;
+        cursor: pointer;
+
+        &:hover {
+          background-color: darken(white, 5%);
+        }
+      }
+    }
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    &_current {
+
+    }
+
+    &_high-score {
+
+    }
+  }
+
+  &__board {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    user-select: none;
+  }
+}

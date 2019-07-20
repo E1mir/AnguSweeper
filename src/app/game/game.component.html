@@ -1,19 +1,34 @@
-<button (click)="onStartNewGame()">
-  New Game
-</button>
-{{ time | convertSecondsToTime }}
-<form [formGroup]="selectDifficultFormGroup">
-  <label>
-    <select formControlName="difficult">
-      <option [value]="BEGINNER">Beginner</option>
-      <option [value]="INTERMEDIATE">Intermediate</option>
-      <option [value]="ADVANCED">Advanced</option>
-      <option [value]="EXPERT">Expert</option>
-    </select>
-  </label>
-</form>
-
-<br>
-<app-game-board [gameDifficult]="difficult">
-</app-game-board>
-
+<div class="game">
+  <h1 class="game__title">Choose game difficulty level</h1>
+  <form
+    [formGroup]="difficultySelectFormGroup"
+    class="game__form">
+    <label>
+      <select
+        formControlName="difficult"
+        class="game__form__input game__form__input_select">
+        <option [value]="BEGINNER" selected>Beginner</option>
+        <option [value]="INTERMEDIATE">Intermediate</option>
+        <option [value]="ADVANCED">Advanced</option>
+        <option [value]="EXPERT">Expert</option>
+      </select>
+    </label>
+    <button
+      class="game__form__input game__form__input_button"
+      (click)="onStartNewGame()">
+      Start Game
+    </button>
+  </form>
+  <div class="game__time">
+    <div class="current">
+      {{ time | convertSecondsToTime }}
+    </div>
+    <div class="high-score">
+      {{ highScore?.time | convertSecondsToTime }}
+    </div>
+  </div>
+  <div class="game__board">
+    <app-game-board>
+    </app-game-board>
+  </div>
+</div>
