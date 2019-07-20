@@ -45,12 +45,12 @@ export class GameBoardComponent implements OnInit, OnDestroy {
   }
 
   tileHeld(tile: Tile) {
-    if (!tile.isObserved) {
+    if (!tile.isObserved && !this.gameOver && !this.gameWon) {
       this.mouseHoldTimeout = setTimeout(() => {
         if (tile.flag) {
           tile.flag = null;
           this.minesCount++;
-        } else {
+        } else if (this.minesCount !== 0) {
           tile.flag = FLAG_MINE;
           this.minesCount--;
           this.isGameWon();
@@ -62,6 +62,7 @@ export class GameBoardComponent implements OnInit, OnDestroy {
 
   private onElementClicked(tile: Tile): void {
     if (tile.flag === FLAG_MINE) {
+      tile.flag = null;
       return;
     }
     if (tile.hasMine) {
@@ -159,6 +160,7 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         zeroTiles.push(neighbour);
       } else {
         neighbour.isObserved = true;
+        neighbour.flag = null;
       }
     }
     for (const zeroTile of zeroTiles) {
