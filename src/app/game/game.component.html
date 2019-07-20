@@ -18,16 +18,16 @@
       Start Game
     </button>
   </form>
-  <div class="game__time">
-    <div class="current">
-      {{ time | convertSecondsToTime }}
-    </div>
-    <div class="high-score">
-      {{ highScore?.time | convertSecondsToTime }}
-    </div>
-  </div>
   <div class="game__board">
     <app-game-board>
     </app-game-board>
+  </div>
+  <div class="game__time">
+    <div class="current">
+      Time: {{ time | convertSecondsToTime }}
+    </div>
+    <div class="high-score">
+      Best time: {{ highScore?.time | convertSecondsToTime }}
+    </div>
   </div>
 </div>
