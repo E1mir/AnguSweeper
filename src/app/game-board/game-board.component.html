@@ -1,11 +1,22 @@
+<div *ngIf="gameOver">
+  GAME OVER!
+</div>
+<div *ngIf="gameWon">
+  YOU WIN!
+</div>
 <table class="board">
   <tr *ngFor="let row of gameBoard" class="board__row">
     <td
       *ngFor="let tile of row"
       class="board__tile"
       [class.active]="tile.isObserved"
-      (click)="onElementClick(tile)">
-      <div class="info" *ngIf="tile.nearestBombsCount > 0 && tile.isObserved">
+      [class.mine]="tile.flag && !tile.isObserved"
+      (mousedown)="tileHeld(tile)"
+      (mouseup)="tileClicked(tile)">
+      <!-- <div class="info" *ngIf="tile.nearestBombsCount > 0 && tile.isObserved">-->
+      <!--   {{ tile.nearestBombsCount }}-->
+      <!-- </div>-->
+      <div class="info">
         {{ tile.nearestBombsCount }}
       </div>
     </td>
