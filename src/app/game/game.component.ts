@@ -3,6 +3,7 @@ import { ADVANCED, BEGINNER, EXPERT, INTERMEDIATE } from '../app.constants';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameService } from '../services/game.service';
 import { Subscription } from 'rxjs';
+import { Score } from '../models/score.model';
 
 @Component({
   selector: 'app-game',
@@ -12,13 +13,13 @@ import { Subscription } from 'rxjs';
 export class GameComponent implements OnInit, OnDestroy {
 
   public time: number = 0;
-  public selectDifficultFormGroup: FormGroup;
+  public highScore: Score;
+  public difficultySelectFormGroup: FormGroup;
   public BEGINNER = BEGINNER;
   public INTERMEDIATE = INTERMEDIATE;
   public ADVANCED = ADVANCED;
   public EXPERT = EXPERT;
 
-  public difficult: string;
 
   private startGameSubscription: Subscription;
   private timerSubscription: Subscription;
@@ -37,14 +38,14 @@ export class GameComponent implements OnInit, OnDestroy {
 
   onStartNewGame(): void {
     this.time = 0;
-    this.difficult = this.selectDifficultFormGroup.get('difficult').value;
-    this.gameService.startGame();
+    const difficult = this.difficultySelectFormGroup.get('difficult').value;
+    this.highScore = this.gameService.getHighScore(difficult);
+    this.gameService.startGame(difficult);
   }
 
 
   private initializeGameDifficult(): void {
-    this.difficult = BEGINNER;
-    this.selectDifficultFormGroup = new FormGroup({
+    this.difficultySelectFormGroup = new FormGroup({
       difficult: new FormControl(BEGINNER, Validators.required),
     });
   }
